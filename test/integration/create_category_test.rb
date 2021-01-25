@@ -11,4 +11,15 @@ class CreateCategoryTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_match 'Food', response.body
   end
+
+  test 'get new category form and reject invalid category submission' do
+    get '/categories/new'
+    assert_response :success
+    assert_no_difference 'Category.count' do
+      post categories_path, params: { category: { name: 'x' } }
+    end
+    assert_match 'errors', response.body
+    assert_select 'div.alert'
+    assert_select 'h4.alert-heading'
+  end
 end
